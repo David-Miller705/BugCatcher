@@ -2,13 +2,10 @@ package com.revature.pages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class ManagerHomePage {
-    @FindBy(xpath = "//nav/p")
-    public WebElement greeting;
+public class TestCasesPage {
 
     @FindBy(xpath="//nav/a[@href='/matrices']")
     public WebElement matricesLink;
@@ -25,11 +22,12 @@ public class ManagerHomePage {
     @FindBy(xpath="//nav/a[@href='/?dev=5']")
     public WebElement logoutLink;
 
-    @FindBy(xpath="//nav/a[@href='/managerhome']")
+    @FindBy(xpath="//nav/a[@href='/managerhome' or @href='/testerhome']")
     public WebElement homePageLink;
 
 
-    public ManagerHomePage(WebDriver driver) {
+
+    public TestCasesPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
     }
 }

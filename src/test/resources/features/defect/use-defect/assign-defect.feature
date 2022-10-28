@@ -1,5 +1,5 @@
 Feature: Assign Defect
- 
+
     Scenario: Assign Defect 
         Given The manager is logged in as a manager 
         Given The manager is on the home page
