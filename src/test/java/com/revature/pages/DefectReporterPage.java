@@ -25,6 +25,32 @@ public class DefectReporterPage {
     @FindBy(xpath="//nav/a[@href='/managerhome' or @href='/testerhome']")
     public WebElement homePageLink;
 
+    @FindBy(xpath = "//form[@id='defectReport']/input[@name='dateReported' and @type='date']")
+    public WebElement dateInput;
+
+    @FindBy(xpath = "//form[@id='defectReport']/textarea[@name='desc']")
+    public WebElement descriptionInput;
+
+    @FindBy(xpath = "//form[@id='defectReport']/textarea[@name='stepsToReproduce']")
+    public WebElement stepsToReproduceInput;
+
+    @FindBy(xpath = "//form[@id='defectReport']/input[@name='severity' and @type='range']")
+    public WebElement severityInput;
+
+    @FindBy(xpath = "//form[@id='defectReport']/input[@name='severity' and @type='range']/following-sibling::p[1]")
+    public WebElement severityText;
+
+    @FindBy(xpath = "//form[@id='defectReport']/input[@name='priority' and @type='range']")
+    public WebElement priorityInput;
+
+    @FindBy(xpath = "//form[@id='defectReport']/input[@name='priority' and @type='range']/following-sibling::p[1]")
+    public WebElement priorityText;
+
+    @FindBy(xpath = "//form[@id='defectReport']/button[@type='submit']")
+    public WebElement reportButton;
+
+
+
 
 
     public DefectReporterPage(WebDriver driver) {
