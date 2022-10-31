@@ -49,6 +49,11 @@ public class DefectReporterPage {
     @FindBy(xpath = "//form[@id='defectReport']/button[@type='submit']")
     public WebElement reportButton;
 
+    @FindBy(xpath = "//div[@class='ReactModalPortal']//h4")
+    public WebElement defectID;
+
+    @FindBy(xpath = "//button[text()='Close']")
+    public WebElement closeButton;
 
 
 
