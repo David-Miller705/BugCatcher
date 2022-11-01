@@ -48,6 +48,29 @@ public class ManagerHomePage {
     @FindBy(xpath = "//button[text()='Assign']")
     public WebElement assignButton;
 
+    // "new" should be capitalized?
+    @FindBy(xpath = "//button[text()='Create A new Requirements Matrix']")
+    public WebElement newMatrixButton;
+
+    @FindBy(xpath = "//input[@name='title']")
+    public WebElement matrixTitle;
+
+    @FindBy(xpath = "//fieldset//tbody/tr[last()]/td[1]/input")
+    public WebElement matrixRequirement;
+
+    @FindBy(xpath = "//fieldset//tbody/tr[last()]/td[2]/select")
+    public WebElement matrixPriority;
+
+    @FindBy(xpath = "//fieldset//tbody/tr[last()]/td[3]/input")
+    public WebElement matrixNote;
+
+    @FindBy(xpath = "//fieldset/button[text()='Add Requirement']")
+    public WebElement addRequirementButton;
+
+    @FindBy(xpath = "//button[text()='Create Matrix']")
+    public WebElement createMatrixButton;
+
+
 
     public ManagerHomePage(WebDriver driver) {
         PageFactory.initElements(driver, this);

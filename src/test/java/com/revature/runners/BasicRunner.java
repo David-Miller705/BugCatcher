@@ -7,11 +7,12 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.logging.Log;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
-@CucumberOptions(features = "classpath:features/defect", glue = "com.revature.stepimplementations")
+@CucumberOptions(features = "classpath:features/matrix", glue = "com.revature.stepimplementations")
 public class BasicRunner extends AbstractTestNGCucumberTests {
     public static String loginPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/?dev=5";
     public static String managerHomePageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/managerhome";
@@ -46,6 +47,7 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
         defectOverviewPage = new DefectOverviewPage(driver);
         defectReporterPage = new DefectReporterPage(driver);
     }
+
 
     @AfterMethod
     public void cleanup() {
