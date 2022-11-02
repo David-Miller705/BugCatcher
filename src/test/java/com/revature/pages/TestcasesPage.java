@@ -7,7 +7,7 @@ import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
 
-public class TestCasesPage {
+public class TestcasesPage {
 
     @FindBy(xpath="//nav/a[@href='/matrices']")
     public WebElement matricesLink;
@@ -33,20 +33,27 @@ public class TestCasesPage {
     @FindBy(xpath = "//textarea[@name='steps']")
     public WebElement stepsTextbox;
 
-    @FindBy(xpath = "//button[text()='Submit']")
+    @FindBy(xpath = "//button[text()=' Submit']")
     public WebElement submitButton;
+    // There's a space in the submit button tag
 
     @FindBy(xpath = "//table/tbody/tr")
     public List<WebElement> testcases;
 
-    @FindBy(xpath = "//div[@class='ReactModalPortal']//button[text()='Edit']")
-    public WebElement enterEditButton;
+    @FindBy(xpath = "//div[@class='ReactModalPortal']//h3")
+    public WebElement modalID;
+
+    @FindBy(xpath = "//div[@class='ReactModalPortal']//h4[text()='Performed By']/following-sibling::*[1]")
+    public WebElement modalPerformedBy;
+
+    @FindBy(xpath = "//div[@class='ReactModalPortal']//button/a[text()='Edit']")
+    public WebElement modalEditButton;
 
     @FindBy(xpath = "//div[@class='ReactModalPortal']//button[text()='Close']")
-    public WebElement closeButton;
+    public WebElement modalCloseButton;
 
 
-    public TestCasesPage(WebDriver driver) {
+    public TestcasesPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
     }
 }
