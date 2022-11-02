@@ -5,9 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-import java.util.List;
-
-public class TestCasesPage {
+public class TestCasesEditPage {
 
     @FindBy(xpath="//nav/a[@href='/matrices']")
     public WebElement matricesLink;
@@ -27,26 +25,10 @@ public class TestCasesPage {
     @FindBy(xpath="//nav/a[@href='/managerhome' or @href='/testerhome']")
     public WebElement homePageLink;
 
-    @FindBy(xpath = "//textarea[@name='desc']")
-    public WebElement descriptionTextbox;
+    
 
-    @FindBy(xpath = "//textarea[@name='steps']")
-    public WebElement stepsTextbox;
-
-    @FindBy(xpath = "//button[text()='Submit']")
-    public WebElement submitButton;
-
-    @FindBy(xpath = "//table/tbody/tr")
-    public List<WebElement> testcases;
-
-    @FindBy(xpath = "//div[@class='ReactModalPortal']//button[text()='Edit']")
-    public WebElement enterEditButton;
-
-    @FindBy(xpath = "//div[@class='ReactModalPortal']//button[text()='Close']")
-    public WebElement closeButton;
-
-
-    public TestCasesPage(WebDriver driver) {
+    public TestCasesEditPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
     }
+
 }

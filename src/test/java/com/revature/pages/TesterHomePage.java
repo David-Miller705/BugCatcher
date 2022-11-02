@@ -57,8 +57,12 @@ public class TesterHomePage {
     @FindBy(xpath = "//button[text() = 'Shelved']")
     public List<WebElement> pendingDefectsChangeStatusToShelvedButtons;
 
+    @FindBy(xpath = "//li//p/b[1]")
+    public List<WebElement> pendingDefectsID;
+
     @FindBy(xpath = "//li//p/b[2]")
     public List<WebElement> pendingDefectsStatusText;
+
 
 
 

@@ -17,6 +17,7 @@ public class MatrixSteps {
     private boolean manager = true;
     private boolean add = true;
     private int chosenMatrix = 0;
+    private int chosenRequirement = 0;
     private int defectCount = 0;
     private int chosenDefect = 0;
 
@@ -58,7 +59,7 @@ public class MatrixSteps {
     @When("A manager saves a matrix")
     public void a_manager_saves_a_matrix() throws InterruptedException {
         BasicRunner.managerHomePage.createMatrixButton.click();
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         BasicRunner.driver.switchTo().alert().dismiss();
     }
     @Then("The matrix should be visible for all testers and managers")
@@ -108,7 +109,7 @@ public class MatrixSteps {
             BasicRunner.loginPage.usernameInput.sendKeys("g8tor");
             BasicRunner.loginPage.passwordInput.sendKeys("chomp!");
             BasicRunner.loginPage.loginButton.click();
-            Thread.sleep(500);
+            Thread.sleep(1000);
             String currentURL = BasicRunner.driver.getCurrentUrl();
             Assert.assertEquals(currentURL, BasicRunner.managerHomePageURL);
 
@@ -121,7 +122,7 @@ public class MatrixSteps {
             BasicRunner.loginPage.usernameInput.sendKeys("ryeGuy");
             BasicRunner.loginPage.passwordInput.sendKeys("coolbeans");
             BasicRunner.loginPage.loginButton.click();
-            Thread.sleep(500);
+            Thread.sleep(1000);
             String currentURL = BasicRunner.driver.getCurrentUrl();
             Assert.assertEquals(currentURL, BasicRunner.testerHomePageURL);
 
@@ -130,53 +131,66 @@ public class MatrixSteps {
         }
 
         chosenMatrix = random.nextInt(BasicRunner.matricesPage.matrices.size());
-        BasicRunner.matricesPage.matrices.get(chosenMatrix).findElement(By.xpath("//button[text()='Show']")).click();
+        BasicRunner.matricesPage.matrices.get(chosenMatrix).findElement(By.xpath(".//button[text()='Show']")).click();
+
 
     }
     @When("A manager or tester adds or removes defects")
-    public void a_manager_or_tester_adds_or_removes_defects() {
-        add = random.nextBoolean();
+    public void a_manager_or_tester_adds_or_removes_defects() throws InterruptedException {
+        //add = random.nextBoolean();
+        Thread.sleep(1000);
+        List<WebElement> requirementsEditButton = BasicRunner.matricesPage.matrices.get(chosenMatrix)
+                .findElements(By.xpath(".//button[text()='Edit']"));
+        chosenRequirement = random.nextInt(requirementsEditButton.size());
+        requirementsEditButton.get(chosenRequirement).click();
+        Thread.sleep(1000);
         List<WebElement> defects = BasicRunner.matricesPage.matrices.get(chosenMatrix)
-                .findElements(By.xpath("//h3[text()='Defect IDs']/following-sibling::ul/li"));
+                .findElements(By.xpath(".//h3[text()='Defect IDs']/following-sibling::ul[1]/li"));
         defectCount = defects.size()-1; // last entry is the option for adding a defect, not a defect itself
-
+        Thread.sleep(2000);
         if(add) {
-            defects.get(defectCount).findElement(By.xpath("//input[@list='testlist']")).sendKeys("901");
-            defects.get(defectCount).findElement(By.xpath("//button[text()='Add']")).click();
+            defects.get(defectCount).findElement(By.xpath(".//input[@list='defectlist']")).sendKeys("901");
+            defects.get(defectCount).findElement(By.xpath(".//button[text()='Add']")).click();
         } else {
             if (defectCount > 0) {
-                chosenDefect = random.nextInt(defects.size()-1);
-                defects.get(chosenDefect).findElement(By.xpath("//button[text()='Remove']")).click();
+                chosenDefect = random.nextInt(defectCount);
+                defects.get(chosenDefect).findElement(By.xpath(".//button[text()='Remove']")).click();
             }
         }
     }
     @When("A manager or tester confirms their changes")
-    public void a_manager_or_tester_confirms_their_changes() {
-
-
-
+    public void a_manager_or_tester_confirms_their_changes() throws InterruptedException {
+        Thread.sleep(500);
+        BasicRunner.matricesPage.matrices.get(chosenMatrix).findElement(By.xpath(".//button[text()='Save Requirements']")).click();
+        Thread.sleep(2000);
     }
     @Then("Then the matrix should saved")
     public void then_the_matrix_should_saved() {
-        // Write code here that turns the phrase above into concrete actions
-        //throw new io.cucumber.java.PendingException();
+        String message = BasicRunner.driver.switchTo().alert().getText();
+        Assert.assertEquals(message, "Matrix Saved");
     }
 
     // Update Test Cases
     @When("A manager or tester adds or removes Test Cases")
-    public void a_manager_or_tester_adds_or_removes_test_cases() {
-        add = random.nextBoolean();
-        List<WebElement> defects = BasicRunner.matricesPage.matrices.get(chosenMatrix)
-                .findElements(By.xpath("//h3[text()='Test Case IDs']/following-sibling::ul/li"));
-        defectCount = defects.size()-1; // last entry is the option for adding a defect, not a defect itself
-
+    public void a_manager_or_tester_adds_or_removes_test_cases() throws InterruptedException {
+        //add = random.nextBoolean();
+        Thread.sleep(1000);
+        List<WebElement> requirementsEditButton = BasicRunner.matricesPage.matrices.get(chosenMatrix)
+                .findElements(By.xpath(".//button[text()='Edit']"));
+        chosenRequirement = random.nextInt(requirementsEditButton.size());
+        requirementsEditButton.get(chosenRequirement).click();
+        Thread.sleep(1000);
+        List<WebElement> testcases = BasicRunner.matricesPage.matrices.get(chosenMatrix)
+                .findElements(By.xpath(".//h3[text()='Test Case IDs']/following-sibling::ul[1]/li"));
+        testcaseCount = testcases.size()-1; // last entry is the option for adding a testcase, not a testcase itself
+        Thread.sleep(2000);
         if(add) {
-            defects.get(defectCount).findElement(By.xpath("//input[@list='testlist']")).sendKeys("801");
-            defects.get(defectCount).findElement(By.xpath("//button[text()='Add']")).click();
+            testcases.get(testcaseCount).findElement(By.xpath(".//input[@list='testlist']")).sendKeys("801");
+            testcases.get(testcaseCount).findElement(By.xpath(".//button[text()='Add']")).click();
         } else {
-            if (defectCount > 0) {
-                chosenDefect = random.nextInt(defects.size()-1);
-                defects.get(chosenDefect).findElement(By.xpath("//button[text()='Remove']")).click();
+            if (testcaseCount > 0) {
+                chosenTestcase = random.nextInt(testcaseCount);
+                testcases.get(chosenTestcase).findElement(By.xpath(".//button[text()='Remove']")).click();
             }
         }
     }

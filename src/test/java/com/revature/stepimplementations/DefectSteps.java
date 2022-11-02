@@ -84,7 +84,13 @@ public class DefectSteps {
     }
     @Then("The tester should see the pending defect")
     public void the_tester_should_see_the_pending_defect() {
-
+        boolean foundAssignedDefect = false;
+        for (WebElement e: BasicRunner.testerHomePage.pendingDefectsID) {
+            if(e.getText().contains(defectID)) {
+                foundAssignedDefect = true;
+            }
+        }
+        Assert.assertTrue(foundAssignedDefect);
     }
 
 

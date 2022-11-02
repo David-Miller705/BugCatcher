@@ -44,7 +44,8 @@ public class NavigationSteps {
     }
 
     // All Links Viable
-    // Matricies
+    // Matrices
+    // Overview misspelled
     @Then("The title of page should be Matrix Overivew")
     public void the_title_of_page_should_be_matrix_overivew() {
         Assert.assertEquals(BasicRunner.driver.getTitle(), "Matrix Overview");

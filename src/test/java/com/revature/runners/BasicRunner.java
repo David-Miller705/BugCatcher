@@ -12,7 +12,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
-@CucumberOptions(features = "classpath:features/matrix", glue = "com.revature.stepimplementations")
+@CucumberOptions(features = "classpath:features/defect", glue = "com.revature.stepimplementations")
 public class BasicRunner extends AbstractTestNGCucumberTests {
     public static String loginPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/?dev=5";
     public static String managerHomePageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/managerhome";
@@ -26,6 +26,7 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
     public static TesterHomePage testerHomePage;
     public static MatricesPage matricesPage;
     public static TestCasesPage testCasesPage;
+    public static TestCasesEditPage testCasesEditPage;
     public static DefectReporterPage defectReporterPage;
     public static DefectOverviewPage defectOverviewPage;
 
@@ -44,6 +45,7 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
         testerHomePage = new TesterHomePage(driver);
         matricesPage = new MatricesPage(driver);
         testCasesPage = new TestCasesPage(driver);
+        testCasesEditPage = new TestCasesEditPage(driver);
         defectOverviewPage = new DefectOverviewPage(driver);
         defectReporterPage = new DefectReporterPage(driver);
     }
