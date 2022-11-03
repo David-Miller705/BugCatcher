@@ -14,7 +14,7 @@ import org.testng.annotations.BeforeMethod;
 
 import java.time.Duration;
 
-@CucumberOptions(features = "classpath:features/navigation", glue = "com.revature.stepimplementations")
+@CucumberOptions(features = "classpath:features/login", glue = "com.revature.stepimplementations")
 public class BasicRunner extends AbstractTestNGCucumberTests {
     public static String loginPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/?dev=5";
     public static String managerHomePageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/managerhome";
@@ -34,6 +34,8 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
     public static DefectReporterPage defectReporterPage;
     public static DefectOverviewPage defectOverviewPage;
 
+    public static WebDriverWait webDriverWait;
+
     @BeforeClass
     public void setupClass() {
         WebDriverManager.chromedriver().setup();
@@ -51,6 +53,7 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
         testcasesEditPage = new TestcasesEditPage(driver);
         defectOverviewPage = new DefectOverviewPage(driver);
         defectReporterPage = new DefectReporterPage(driver);
+        webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     @AfterMethod
@@ -60,7 +63,6 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
 
     public static void login(String username, String password) {
         BasicRunner.driver.get(loginPageURL);
-        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         webDriverWait.until(ExpectedConditions.urlToBe(loginPageURL));
         BasicRunner.loginPage.usernameInput.sendKeys(username);
         BasicRunner.loginPage.passwordInput.sendKeys(password);

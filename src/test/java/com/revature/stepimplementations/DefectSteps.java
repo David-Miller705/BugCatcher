@@ -94,42 +94,49 @@ public class DefectSteps {
     //==============================================================================================================
     @Given("The tester is on the Home Page")
     public void the_tester_is_on_the_home_page() throws InterruptedException {
-        BasicRunner.driver.get(BasicRunner.loginPageURL);
-        Thread.sleep(500);
-        BasicRunner.loginPage.usernameInput.sendKeys("ryeGuy");
-        BasicRunner.loginPage.passwordInput.sendKeys("coolbeans");
-        BasicRunner.loginPage.loginButton.click();
-        Thread.sleep(500);
+        BasicRunner.login("ryeGuy", "coolbeans");
         String currentURL = BasicRunner.driver.getCurrentUrl();
         Assert.assertEquals(currentURL, BasicRunner.testerHomePageURL);
     }
     @Then("The tester can can see only defects assigned to them")
     public void the_tester_can_can_see_only_defects_assigned_to_them() throws InterruptedException {
-        Thread.sleep(250);
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
         for (WebElement defect: BasicRunner.testerHomePage.pendingDefectsCollapseButtons) {
+            BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(defect));
             defect.click();
-            Thread.sleep(500);
         }
         //Thread.sleep(1000);
         for (WebElement assignedTo: BasicRunner.testerHomePage.pendingDefectsAssignment) {
             Assert.assertTrue(assignedTo.getText().contains("ryeGuy"));
         }
     }
-    @When("The tester changes to defect to any status")
-    public void the_tester_changes_to_defect_to_any_status() throws InterruptedException {
+    @When("The tester changes to defect to any {string}")
+    public void the_tester_changes_to_defect_to_any_status(String status) throws InterruptedException {
         int pendingDefects = BasicRunner.testerHomePage.pendingDefectsCollapseButtons.size();
         Assert.assertEquals(BasicRunner.testerHomePage.pendingDefectsChangeStatusButtons.size(), pendingDefects);
-        Assert.assertEquals(BasicRunner.testerHomePage.pendingDefectsChangeStatusToAcceptedButtons.size(), pendingDefects);
 
         for (int i=0; i<pendingDefects; i++) {
-            //BasicRunner.testerHomePage.pendingDefectsCollapseButtons.get(i).click();
             BasicRunner.testerHomePage.pendingDefectsChangeStatusButtons.get(i).click();
-            Thread.sleep(250);
-            BasicRunner.testerHomePage.pendingDefectsChangeStatusToAcceptedButtons.get(i).click();
-            //BasicRunner.testerHomePage.pendingDefectsChangeStatusToRejectedButtons.get(i).click();
-            //BasicRunner.testerHomePage.pendingDefectsChangeStatusToFixedButtons.get(i).click();
-            //BasicRunner.testerHomePage.pendingDefectsChangeStatusToDeclinedButtons.get(i).click();
-            //BasicRunner.testerHomePage.pendingDefectsChangeStatusToShelvedButtons.get(i).click();
+            switch(status) {
+                case "Accepted":
+                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToAcceptedButtons.get(i).click();
+                    break;
+                case "Rejected":
+                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToRejectedButtons.get(i).click();
+                    break;
+                case "Fixed":
+                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToFixedButtons.get(i).click();
+                    break;
+                case "Declined":
+                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToDeclinedButtons.get(i).click();
+                    break;
+                case "Shelved":
+                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToShelvedButtons.get(i).click();
+                    break;
+                default:
+                    Assert.fail("Status \"" + status + "\" is not a valid status");
+
+            }
         }
 
     }

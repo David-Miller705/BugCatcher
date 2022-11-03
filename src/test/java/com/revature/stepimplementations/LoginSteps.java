@@ -21,45 +21,45 @@ public class LoginSteps {
 
     @When("The employee types in {string} into the username input")
     public void the_employee_types_in_string_into_the_username_input(String username) {
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.loginPage.usernameInput));
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.loginPage.usernameInput));
         BasicRunner.loginPage.usernameInput.sendKeys(username);
     }
 
     @When("The employee types in {string} into the password input")
     public void the_employee_types_in_string_into_the_password_input(String password) {
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.loginPage.passwordInput));
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.loginPage.passwordInput));
         BasicRunner.loginPage.passwordInput.sendKeys(password);
     }
 
     @When("The employee clicks on the login button")
     public void the_employee_clicks_on_the_login_button() {
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.elementToBeClickable(BasicRunner.loginPage.loginButton));
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(BasicRunner.loginPage.loginButton));
         BasicRunner.loginPage.loginButton.click();
     }
 
     @Then("The employee should see an alert saying they have the wrong password")
     public void the_employee_should_see_an_alert_saying_they_have_the_wrong_password() throws InterruptedException {
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.alertIsPresent());
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         String alert = BasicRunner.driver.switchTo().alert().getText();
         Assert.assertEquals(alert, "Wrong password for User");
     }
 
     @Then("The employee should see an alert saying no user with that username found")
     public void the_employee_should_see_an_alert_saying_no_user_with_that_username_found() throws InterruptedException {
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.alertIsPresent());
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         String alert = BasicRunner.driver.switchTo().alert().getText();
         Assert.assertEquals(alert, "Username not found");
     }
 
     @Then("the employee should be on the {string} page")
     public void the_employee_should_be_on_the_role_page(String role) throws InterruptedException {
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(loginPageURL)));
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(loginPageURL)));
         String currentURL = BasicRunner.driver.getCurrentUrl();
         if (role.equals("Manager")) {
             Assert.assertEquals(currentURL, BasicRunner.managerHomePageURL);
@@ -71,8 +71,8 @@ public class LoginSteps {
 
     @Then("The employee should see their name {string} {string} on the home page")
     public void the_employee_should_see_their_name_patty_pastiche_on_the_home_page(String firstName, String lastName) throws InterruptedException {
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.managerHomePage.greeting));
+        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.managerHomePage.greeting));
         String greeting = BasicRunner.managerHomePage.greeting.getText();
         Assert.assertTrue(greeting.contains(firstName));
         Assert.assertTrue(greeting.contains(lastName));
