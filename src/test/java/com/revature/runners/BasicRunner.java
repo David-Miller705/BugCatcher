@@ -10,7 +10,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
-@CucumberOptions(features = "classpath:features", glue = "com.revature.stepimplementations")
+@CucumberOptions(features = "classpath:features/login", glue = "com.revature.stepimplementations")
 public class BasicRunner extends AbstractTestNGCucumberTests {
     public static String loginPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/?dev=5";
     public static String managerHomePageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/managerhome";
