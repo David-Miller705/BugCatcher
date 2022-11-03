@@ -34,8 +34,7 @@ public class DefectSteps {
     @Given("The manager is on the home page")
     public void the_manager_is_on_the_home_page() throws InterruptedException {
         BasicRunner.page.homePageLink.click();
-        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
-        webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.managerHomePageURL));
+        BasicRunner.webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.managerHomePageURL));
     }
     @Then("The manager should see pending defects")
     public void the_manager_should_see_pending_defects() {
@@ -100,38 +99,60 @@ public class DefectSteps {
     }
     @Then("The tester can can see only defects assigned to them")
     public void the_tester_can_can_see_only_defects_assigned_to_them() throws InterruptedException {
-        //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        BasicRunner.webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.testerHomePageURL));
+
         for (WebElement defect: BasicRunner.testerHomePage.pendingDefectsCollapseButtons) {
+            // Get CSS transition delay (400ms)
+            String transitionDelay = defect.findElement(By.xpath("./following-sibling::div"))
+                    .getCssValue("transition").split(" ")[1];
+            long milliSeconds = (long) (Float.parseFloat(transitionDelay.split("s")[0])*1000);
+
             BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(defect));
             defect.click();
+            // Wait for CSS transition delay
+            // If you don't wait for the transition to finish, the next <span> moves out of the way even
+            // though there was an explicit wait for it to be visible and clickable
+            BasicRunner.actions.pause(milliSeconds).perform();
         }
-        //Thread.sleep(1000);
+
         for (WebElement assignedTo: BasicRunner.testerHomePage.pendingDefectsAssignment) {
             Assert.assertTrue(assignedTo.getText().contains("ryeGuy"));
         }
     }
-    @When("The tester changes to defect to any {string}")
+    @When("The tester changes the defect to {string}")
     public void the_tester_changes_to_defect_to_any_status(String status) throws InterruptedException {
         int pendingDefects = BasicRunner.testerHomePage.pendingDefectsCollapseButtons.size();
         Assert.assertEquals(BasicRunner.testerHomePage.pendingDefectsChangeStatusButtons.size(), pendingDefects);
 
         for (int i=0; i<pendingDefects; i++) {
-            BasicRunner.testerHomePage.pendingDefectsChangeStatusButtons.get(i).click();
+            WebElement button = BasicRunner.testerHomePage.pendingDefectsChangeStatusButtons.get(i);
+            BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+            button.click();
             switch(status) {
                 case "Accepted":
-                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToAcceptedButtons.get(i).click();
+                    button = BasicRunner.testerHomePage.pendingDefectsChangeStatusToAcceptedButtons.get(i);
+                    BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+                    button.click();
                     break;
                 case "Rejected":
-                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToRejectedButtons.get(i).click();
+                    button = BasicRunner.testerHomePage.pendingDefectsChangeStatusToRejectedButtons.get(i);
+                    BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+                    button.click();
                     break;
                 case "Fixed":
-                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToFixedButtons.get(i).click();
+                    button = BasicRunner.testerHomePage.pendingDefectsChangeStatusToFixedButtons.get(i);
+                    BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+                    button.click();
                     break;
                 case "Declined":
-                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToDeclinedButtons.get(i).click();
+                    button = BasicRunner.testerHomePage.pendingDefectsChangeStatusToDeclinedButtons.get(i);
+                    BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+                    button.click();
                     break;
                 case "Shelved":
-                    BasicRunner.testerHomePage.pendingDefectsChangeStatusToShelvedButtons.get(i).click();
+                    button = BasicRunner.testerHomePage.pendingDefectsChangeStatusToShelvedButtons.get(i);
+                    BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+                    button.click();
                     break;
                 default:
                     Assert.fail("Status \"" + status + "\" is not a valid status");
@@ -140,16 +161,16 @@ public class DefectSteps {
         }
 
     }
-    @Then("The tester should see the defect has a different status")
-    public void the_tester_should_see_the_defect_has_a_different_status() {
+    @Then("The tester should see the defect has a {string} status")
+    public void the_tester_should_see_the_defect_has_a_different_status(String status) {
         int pendingDefects = BasicRunner.testerHomePage.pendingDefectsCollapseButtons.size();
         for (int i=0; i<pendingDefects; i++) {
-            Assert.assertTrue(BasicRunner.testerHomePage.pendingDefectsStatusText.get(i).getText().contains("Accepted"));
-            //Assert.assertTrue(BasicRunner.testerHomePage.pendingDefectsStatusText.get(i).getText().contains("Rejected"));
-            //Assert.assertTrue(BasicRunner.testerHomePage.pendingDefectsStatusText.get(i).getText().contains("Fixed"));
-            //Assert.assertTrue(BasicRunner.testerHomePage.pendingDefectsStatusText.get(i).getText().contains("Declined"));
-            //Assert.assertTrue(BasicRunner.testerHomePage.pendingDefectsStatusText.get(i).getText().contains("Shelved"));
+            WebElement row = BasicRunner.testerHomePage.pendingDefectsStatusText.get(i);
+            BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(row));
+            System.out.println(status + Integer.toString(i));
+            Assert.assertTrue(row.getText().contains(status));
         }
+
     }
 
 
@@ -172,9 +193,10 @@ public class DefectSteps {
         Assert.assertEquals(currentURL, BasicRunner.defectReporterPageURL);
     }
     @When("The employee selects todays date")
-    public void the_employee_selects_todays_date() {
+    public void the_employee_selects_todays_date() throws InterruptedException {
         String date = java.time.LocalDate.now().toString();
-        //System.out.println("Date = '" + date + "'");
+        // Need to convert YYYY-MM-DD to MM-DD-YYYY
+        date = date.substring(5,7) + "-" + date.substring(8,10) + "-" + date.substring(0, 4);
         BasicRunner.defectReporterPage.dateInput.sendKeys(date);
     }
     @When("The employee types in {string} with")
@@ -289,6 +311,5 @@ public class DefectSteps {
         List<WebElement> children = BasicRunner.driver.findElements(By.xpath("//div[@class='ReactModalPortal']/*"));
         Assert.assertEquals(children.size(), 0);
     }
-
-
+    
 }

@@ -5,7 +5,7 @@ Feature: Defect Status
     Scenario Outline: Change Status
         Given The tester is on the Home Page
         Then The tester can can see only defects assigned to them
-        When The tester changes to defect to "<status>"
+        When The tester changes the defect to "<status>"
         Then The tester should see the defect has a "<status>" status
 
         Examples:

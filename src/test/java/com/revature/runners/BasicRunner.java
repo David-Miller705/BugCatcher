@@ -6,6 +6,7 @@ import io.cucumber.testng.CucumberOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
@@ -14,7 +15,7 @@ import org.testng.annotations.BeforeMethod;
 
 import java.time.Duration;
 
-@CucumberOptions(features = "classpath:features/login", glue = "com.revature.stepimplementations")
+@CucumberOptions(features = "classpath:features/defect", glue = "com.revature.stepimplementations")
 public class BasicRunner extends AbstractTestNGCucumberTests {
     public static String loginPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/?dev=5";
     public static String managerHomePageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/managerhome";
@@ -36,6 +37,8 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
 
     public static WebDriverWait webDriverWait;
 
+    public static Actions actions;
+
     @BeforeClass
     public void setupClass() {
         WebDriverManager.chromedriver().setup();
@@ -54,6 +57,7 @@ public class BasicRunner extends AbstractTestNGCucumberTests {
         defectOverviewPage = new DefectOverviewPage(driver);
         defectReporterPage = new DefectReporterPage(driver);
         webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        actions = new Actions(driver);
     }
 
     @AfterMethod

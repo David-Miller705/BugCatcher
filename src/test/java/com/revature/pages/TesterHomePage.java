@@ -33,6 +33,9 @@ public class TesterHomePage extends Page {
     @FindBy(xpath = "//li/div/span")
     public List<WebElement> pendingDefectsCollapseButtons;
 
+    @FindBy(xpath = "//li/div/span/following-sibling::div[1]")
+    public List<WebElement> collapseInfo;
+
     @FindBy(xpath = "//li//div[@class='Collapsible__contentInner']/p[5]")
     public List<WebElement> pendingDefectsAssignment;
 
