@@ -10,9 +10,12 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import java.text.ParseException;
+import java.time.Duration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,20 +29,13 @@ public class DefectSteps {
     //==============================================================================================================
     @Given("The manager is logged in as a manager")
     public void the_manager_is_logged_in_as_a_manager() throws InterruptedException {
-        // Note to self, this code already exists as its own test
-        // Maybe there is a way to refactor this intelligently
-        // Attempt to run this test after the positive login test for manager and do nothing here.
-        BasicRunner.driver.get(BasicRunner.loginPageURL);
-        Thread.sleep(500);
-        BasicRunner.loginPage.usernameInput.sendKeys("g8tor");
-        BasicRunner.loginPage.passwordInput.sendKeys("chomp!");
-        BasicRunner.loginPage.loginButton.click();
+        BasicRunner.login("g8tor", "chomp!");
     }
     @Given("The manager is on the home page")
     public void the_manager_is_on_the_home_page() throws InterruptedException {
-        Thread.sleep(500);
-        String currentURL = BasicRunner.driver.getCurrentUrl();
-        Assert.assertEquals(currentURL, BasicRunner.managerHomePageURL);
+        BasicRunner.page.homePageLink.click();
+        WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
+        webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.managerHomePageURL));
     }
     @Then("The manager should see pending defects")
     public void the_manager_should_see_pending_defects() {

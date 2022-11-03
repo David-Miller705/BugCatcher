@@ -7,28 +7,28 @@ import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
 
-public class TesterHomePage {
-
-    @FindBy(xpath = "//nav/p")
-    public WebElement greeting;
-
-    @FindBy(xpath="//nav/a[@href='/matrices']")
-    public WebElement matricesLink;
-
-    @FindBy(xpath="//nav/a[@href='/testcases']")
-    public WebElement testCasesLink;
-
-    @FindBy(xpath="//nav/a[@href='/defectreporter']")
-    public WebElement defectReporterLink;
-
-    @FindBy(xpath="//nav/a[@href='/defectoverview']")
-    public WebElement defectOverviewLink;
-
-    @FindBy(xpath="//nav/a[@href='/?dev=5']")
-    public WebElement logoutLink;
-
-    @FindBy(xpath="//nav/a[@href='/testerhome']")
-    public WebElement homePageLink;
+public class TesterHomePage extends Page {
+//
+//    @FindBy(xpath = "//nav/p")
+//    public WebElement greeting;
+//
+//    @FindBy(xpath="//nav/a[@href='/matrices']")
+//    public WebElement matricesLink;
+//
+//    @FindBy(xpath="//nav/a[@href='/testcases']")
+//    public WebElement testCasesLink;
+//
+//    @FindBy(xpath="//nav/a[@href='/defectreporter']")
+//    public WebElement defectReporterLink;
+//
+//    @FindBy(xpath="//nav/a[@href='/defectoverview']")
+//    public WebElement defectOverviewLink;
+//
+//    @FindBy(xpath="//nav/a[@href='/?dev=5']")
+//    public WebElement logoutLink;
+//
+//    @FindBy(xpath="//nav/a[@href='/testerhome']")
+//    public WebElement homePageLink;
 
     @FindBy(xpath = "//li/div/span")
     public List<WebElement> pendingDefectsCollapseButtons;
@@ -67,6 +67,7 @@ public class TesterHomePage {
 
 
     public TesterHomePage(WebDriver driver) {
+        super(driver);
         PageFactory.initElements(driver, this);
     }
 }
