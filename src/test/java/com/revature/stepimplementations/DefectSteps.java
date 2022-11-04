@@ -75,9 +75,9 @@ public class DefectSteps {
     @Then("The defect should disappear from the list")
     public void the_defect_should_disappear_from_the_list() {
         // The removed ID will cause a staleElementReferenceException due to removing a defect from the list
-        // So we wait for the element to detach from the dom then remove it from the list.
+        // So we wait for the element to detach from the dom which will automatically remove it from the list
+        // when the POM grabs the list again
         BasicRunner.webDriverWait.until(ExpectedConditions.stalenessOf(BasicRunner.managerHomePage.pendingDefectsID.get(chosenDefect)));
-        BasicRunner.managerHomePage.pendingDefectsID.remove(chosenDefect);
         for (WebElement e: BasicRunner.managerHomePage.pendingDefectsID) {
             Assert.assertNotEquals(e.getText(), defectID);
         }
