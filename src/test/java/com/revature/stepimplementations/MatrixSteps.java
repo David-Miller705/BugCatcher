@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 
 import java.util.List;
@@ -29,15 +30,8 @@ public class MatrixSteps {
     // MATRIX
     // create new matrix
     @Given("A manager is on their home page")
-    public void a_manager_is_on_their_home_page() throws InterruptedException {
-        BasicRunner.driver.get(BasicRunner.loginPageURL);
-        Thread.sleep(500);
-        BasicRunner.loginPage.usernameInput.sendKeys("g8tor");
-        BasicRunner.loginPage.passwordInput.sendKeys("chomp!");
-        BasicRunner.loginPage.loginButton.click();
-        Thread.sleep(500);
-        String currentURL = BasicRunner.driver.getCurrentUrl();
-        Assert.assertEquals(currentURL, BasicRunner.managerHomePageURL);
+    public void a_manager_is_on_their_home_page() {
+        BasicRunner.login("g8tor", "chomp!");
     }
     @Then("A manager can pull up a form to make a new matrix")
     public void a_manager_can_pull_up_a_form_to_make_a_new_matrix() {
@@ -57,43 +51,27 @@ public class MatrixSteps {
         BasicRunner.managerHomePage.addRequirementButton.click();
     }
     @When("A manager saves a matrix")
-    public void a_manager_saves_a_matrix() throws InterruptedException {
+    public void a_manager_saves_a_matrix() {
         BasicRunner.managerHomePage.createMatrixButton.click();
-        Thread.sleep(1000);
+        BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         BasicRunner.driver.switchTo().alert().dismiss();
     }
     @Then("The matrix should be visible for all testers and managers")
-    public void the_matrix_should_be_visible_for_all_testers_and_managers() throws InterruptedException {
+    public void the_matrix_should_be_visible_for_all_testers_and_managers() {
         String addedTitle = "New Title"+Integer.toString(randomPart);
         String lastTitle = null;
-        // Check if manager can see it
-        /*
-        BasicRunner.driver.get(BasicRunner.loginPageURL);
-        Thread.sleep(500);
-        BasicRunner.loginPage.usernameInput.sendKeys("g8tor");
-        BasicRunner.loginPage.passwordInput.sendKeys("chomp!");
-        BasicRunner.loginPage.loginButton.click();
-        Thread.sleep(500);
-        String currentURL = BasicRunner.driver.getCurrentUrl();
-        Assert.assertEquals(currentURL, BasicRunner.managerHomePageURL);
-         */
+        BasicRunner.login("g8tor", "chomp!");
         BasicRunner.managerHomePage.matricesLink.click();
-        Thread.sleep(500);
+        BasicRunner.webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.matricesPageURL));
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOfAllElements(BasicRunner.matricesPage.matrices));
         lastTitle = BasicRunner.matricesPage.matrices.get(BasicRunner.matricesPage.matrices.size()-1).getText().split("\n")[0];
         Assert.assertEquals(lastTitle, addedTitle);
 
         // Check if tester can see it
-        BasicRunner.driver.get(BasicRunner.loginPageURL);
-        Thread.sleep(500);
-        BasicRunner.loginPage.usernameInput.sendKeys("ryeGuy");
-        BasicRunner.loginPage.passwordInput.sendKeys("coolbeans");
-        BasicRunner.loginPage.loginButton.click();
-        Thread.sleep(500);
-        String currentURL = BasicRunner.driver.getCurrentUrl();
-        Assert.assertEquals(currentURL, BasicRunner.testerHomePageURL);
-
+        BasicRunner.login("ryeGuy", "coolbeans");
         BasicRunner.testerHomePage.matricesLink.click();
-        Thread.sleep(500);
+        BasicRunner.webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.matricesPageURL));
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOfAllElements(BasicRunner.matricesPage.matrices));
         lastTitle = BasicRunner.matricesPage.matrices.get(BasicRunner.matricesPage.matrices.size()-1).getText().split("\n")[0];
         Assert.assertEquals(lastTitle, addedTitle);
 
@@ -101,97 +79,107 @@ public class MatrixSteps {
 
     // Update Defects
     @Given("A manager or tester has selected a matrix")
-    public void a_manager_or_tester_has_selected_a_matrix() throws InterruptedException {
+    public void a_manager_or_tester_has_selected_a_matrix() {
         manager = random.nextBoolean();
         if (manager) {
-            BasicRunner.driver.get(BasicRunner.loginPageURL);
-            Thread.sleep(500);
-            BasicRunner.loginPage.usernameInput.sendKeys("g8tor");
-            BasicRunner.loginPage.passwordInput.sendKeys("chomp!");
-            BasicRunner.loginPage.loginButton.click();
-            Thread.sleep(1000);
-            String currentURL = BasicRunner.driver.getCurrentUrl();
-            Assert.assertEquals(currentURL, BasicRunner.managerHomePageURL);
-
+            BasicRunner.login("g8tor", "chomp!");
             BasicRunner.managerHomePage.matricesLink.click();
-            Thread.sleep(500);
-
         } else {
-            BasicRunner.driver.get(BasicRunner.loginPageURL);
-            Thread.sleep(500);
-            BasicRunner.loginPage.usernameInput.sendKeys("ryeGuy");
-            BasicRunner.loginPage.passwordInput.sendKeys("coolbeans");
-            BasicRunner.loginPage.loginButton.click();
-            Thread.sleep(1000);
-            String currentURL = BasicRunner.driver.getCurrentUrl();
-            Assert.assertEquals(currentURL, BasicRunner.testerHomePageURL);
-
-            BasicRunner.testerHomePage.matricesLink.click();
-            Thread.sleep(500);
+            BasicRunner.login("ryeGuy", "coolbeans");
+            BasicRunner.managerHomePage.matricesLink.click();
         }
+        BasicRunner.webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.matricesPageURL));
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOfAllElements(BasicRunner.matricesPage.matrices));
 
         chosenMatrix = random.nextInt(BasicRunner.matricesPage.matrices.size());
-        BasicRunner.matricesPage.matrices.get(chosenMatrix).findElement(By.xpath(".//button[text()='Show']")).click();
+        WebElement button = BasicRunner.matricesPage.matrices.get(chosenMatrix).findElement(By.xpath(".//button[text()='Show']"));
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
 
 
     }
     @When("A manager or tester adds or removes defects")
-    public void a_manager_or_tester_adds_or_removes_defects() throws InterruptedException {
-        //add = random.nextBoolean();
-        Thread.sleep(1000);
+    public void a_manager_or_tester_adds_or_removes_defects() {
+        add = random.nextBoolean();
+
         List<WebElement> requirementsEditButton = BasicRunner.matricesPage.matrices.get(chosenMatrix)
                 .findElements(By.xpath(".//button[text()='Edit']"));
         chosenRequirement = random.nextInt(requirementsEditButton.size());
-        requirementsEditButton.get(chosenRequirement).click();
-        Thread.sleep(1000);
+        WebElement button = requirementsEditButton.get(chosenRequirement);
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
+
+
         List<WebElement> defects = BasicRunner.matricesPage.matrices.get(chosenMatrix)
                 .findElements(By.xpath(".//h3[text()='Defect IDs']/following-sibling::ul[1]/li"));
         defectCount = defects.size()-1; // last entry is the option for adding a defect, not a defect itself
-        Thread.sleep(2000);
+
         if(add) {
-            defects.get(defectCount).findElement(By.xpath(".//input[@list='defectlist']")).sendKeys("901");
-            defects.get(defectCount).findElement(By.xpath(".//button[text()='Add']")).click();
+            WebElement input = defects.get(defectCount).findElement(By.xpath(".//input[@list='defectlist']"));
+            BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(input));
+            input.sendKeys("901");
+
+            button = defects.get(defectCount).findElement(By.xpath(".//button[text()='Add']"));
+            BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+            button.click();
         } else {
             if (defectCount > 0) {
                 chosenDefect = random.nextInt(defectCount);
-                defects.get(chosenDefect).findElement(By.xpath(".//button[text()='Remove']")).click();
+                button = defects.get(chosenDefect).findElement(By.xpath(".//button[text()='Remove']"));
+                BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+                button.click();
+
             }
         }
     }
     @When("A manager or tester confirms their changes")
-    public void a_manager_or_tester_confirms_their_changes() throws InterruptedException {
-        Thread.sleep(500);
-        BasicRunner.matricesPage.matrices.get(chosenMatrix).findElement(By.xpath(".//button[text()='Save Requirements']")).click();
-        Thread.sleep(2000);
+    public void a_manager_or_tester_confirms_their_changes() {
+        WebElement button = BasicRunner.matricesPage.matrices.get(chosenMatrix).findElement(By.xpath(".//button[text()='Save Requirements']"));
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
+
     }
     @Then("Then the matrix should saved")
     public void then_the_matrix_should_saved() {
+        BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         String message = BasicRunner.driver.switchTo().alert().getText();
         Assert.assertEquals(message, "Matrix Saved");
     }
 
     // Update Test Cases
     @When("A manager or tester adds or removes Test Cases")
-    public void a_manager_or_tester_adds_or_removes_test_cases() throws InterruptedException {
-        //add = random.nextBoolean();
-        Thread.sleep(1000);
+    public void a_manager_or_tester_adds_or_removes_test_cases() {
+        add = random.nextBoolean();
         List<WebElement> requirementsEditButton = BasicRunner.matricesPage.matrices.get(chosenMatrix)
                 .findElements(By.xpath(".//button[text()='Edit']"));
         chosenRequirement = random.nextInt(requirementsEditButton.size());
-        requirementsEditButton.get(chosenRequirement).click();
-        Thread.sleep(1000);
+
+        WebElement button = requirementsEditButton.get(chosenRequirement);
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
+
         List<WebElement> testcases = BasicRunner.matricesPage.matrices.get(chosenMatrix)
                 .findElements(By.xpath(".//h3[text()='Test Case IDs']/following-sibling::ul[1]/li"));
-        testcaseCount = testcases.size()-1; // last entry is the option for adding a testcase, not a testcase itself
-        Thread.sleep(2000);
+        testcaseCount = testcases.size()-1; // last entry is the option for adding a defect, not a defect itself
+
         if(add) {
-            testcases.get(testcaseCount).findElement(By.xpath(".//input[@list='testlist']")).sendKeys("801");
-            testcases.get(testcaseCount).findElement(By.xpath(".//button[text()='Add']")).click();
+            WebElement input = testcases.get(testcaseCount).findElement(By.xpath(".//input[@list='testlist']"));
+            BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(input));
+            input.sendKeys("801");
+
+            button = testcases.get(testcaseCount).findElement(By.xpath(".//button[text()='Add']"));
+            BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+            button.click();
         } else {
             if (testcaseCount > 0) {
                 chosenTestcase = random.nextInt(testcaseCount);
-                testcases.get(chosenTestcase).findElement(By.xpath(".//button[text()='Remove']")).click();
+                button = testcases.get(chosenTestcase).findElement(By.xpath(".//button[text()='Remove']"));
+                BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+                button.click();
+
             }
         }
+
+
     }
 }

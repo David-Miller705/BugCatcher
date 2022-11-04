@@ -15,13 +15,14 @@ import org.testng.annotations.BeforeMethod;
 
 import java.time.Duration;
 
-@CucumberOptions(features = "classpath:features/defect", glue = "com.revature.stepimplementations")
+@CucumberOptions(features = "classpath:features", glue = "com.revature.stepimplementations")
 public class BasicRunner extends AbstractTestNGCucumberTests {
     public static String loginPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/?dev=5";
     public static String managerHomePageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/managerhome";
     public static String testerHomePageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/testerhome";
     public static String defectReporterPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/defectreporter";
     public static String testcasesPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/testcases";
+    public static String matricesPageURL = "https://bugcatcher-jasdhir.coe.revaturelabs.com/matrices";
 
 
     public static WebDriver driver;

@@ -16,7 +16,7 @@ Feature: Test Cases
         When The tester presses the submit button 
         Then The test case should appear at the bottom of the table
         Then The test case result should say UNEXECUTED
-        When The tester presses on details
+        When The tester clicks on details
         Then A test case modal should appear showing the case ID
         Then The performed by field should say No One 
         When The tester presses the close buttton

@@ -32,11 +32,11 @@ public class DefectSteps {
     // assign-defect.feature
     //==============================================================================================================
     @Given("The manager is logged in as a manager")
-    public void the_manager_is_logged_in_as_a_manager() throws InterruptedException {
+    public void the_manager_is_logged_in_as_a_manager() {
         BasicRunner.login("g8tor", "chomp!");
     }
     @Given("The manager is on the home page")
-    public void the_manager_is_on_the_home_page() throws InterruptedException {
+    public void the_manager_is_on_the_home_page() {
         BasicRunner.page.homePageLink.click();
         BasicRunner.webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.managerHomePageURL));
     }
@@ -73,19 +73,17 @@ public class DefectSteps {
         button.click();
     }
     @Then("The defect should disappear from the list")
-    public void the_defect_should_disappear_from_the_list() throws InterruptedException {
+    public void the_defect_should_disappear_from_the_list() {
         // The removed ID will cause a staleElementReferenceException due to removing a defect from the list
         // So we wait for the element to detach from the dom then remove it from the list.
         BasicRunner.webDriverWait.until(ExpectedConditions.stalenessOf(BasicRunner.managerHomePage.pendingDefectsID.get(chosenDefect)));
         BasicRunner.managerHomePage.pendingDefectsID.remove(chosenDefect);
-        //List<WebElement> stillPendingDefectsID = BasicRunner.driver.findElements(By.xpath("//table/tbody/tr/td[1]"));
-        //BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOfAllElements(stillPendingDefectsID));
         for (WebElement e: BasicRunner.managerHomePage.pendingDefectsID) {
             Assert.assertNotEquals(e.getText(), defectID);
         }
     }
     @Given("The assigned tester is on their home page")
-    public void the_assigned_tester_is_on_their_home_page() throws InterruptedException {
+    public void the_assigned_tester_is_on_their_home_page() {
         String password = null;
         if (chosenTester.equals("ryeGuy")) {
             password = "coolbeans";
@@ -110,13 +108,13 @@ public class DefectSteps {
     //defect-status.feature
     //==============================================================================================================
     @Given("The tester is on the Home Page")
-    public void the_tester_is_on_the_home_page() throws InterruptedException {
+    public void the_tester_is_on_the_home_page() {
         BasicRunner.login("ryeGuy", "coolbeans");
         String currentURL = BasicRunner.driver.getCurrentUrl();
         Assert.assertEquals(currentURL, BasicRunner.testerHomePageURL);
     }
     @Then("The tester can can see only defects assigned to them")
-    public void the_tester_can_can_see_only_defects_assigned_to_them() throws InterruptedException {
+    public void the_tester_can_can_see_only_defects_assigned_to_them() {
         BasicRunner.webDriverWait.until(ExpectedConditions.urlToBe(BasicRunner.testerHomePageURL));
 
         for (WebElement defect: BasicRunner.testerHomePage.pendingDefectsCollapseButtons) {
@@ -138,14 +136,21 @@ public class DefectSteps {
         }
     }
     @When("The tester changes the defect to {string}")
-    public void the_tester_changes_to_defect_to_any_status(String status) throws InterruptedException {
+    public void the_tester_changes_to_defect_to_any_status(String status) {
         int pendingDefects = BasicRunner.testerHomePage.pendingDefectsCollapseButtons.size();
         Assert.assertEquals(BasicRunner.testerHomePage.pendingDefectsChangeStatusButtons.size(), pendingDefects);
 
         for (int i=0; i<pendingDefects; i++) {
             WebElement button = BasicRunner.testerHomePage.pendingDefectsChangeStatusButtons.get(i);
+            // The "Change Status" Button also has a CSS transition
+            String transitionDelay = button.findElement(By.xpath("./../following-sibling::div"))
+                    .getCssValue("transition").split(" ")[1];
+            long milliSeconds = (long) (Float.parseFloat(transitionDelay.split("s")[0])*1000);
+
             BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
             button.click();
+            BasicRunner.actions.pause(milliSeconds).perform();
+
             switch(status) {
                 case "Accepted":
                     button = BasicRunner.testerHomePage.pendingDefectsChangeStatusToAcceptedButtons.get(i);
@@ -196,7 +201,7 @@ public class DefectSteps {
     //Steps too short
     //==============================================================================================================
     @Given("The employee is on the Defect Reporter Page")
-    public void the_employee_is_on_the_defect_reporter_page() throws InterruptedException {
+    public void the_employee_is_on_the_defect_reporter_page() {
         BasicRunner.login("ryeGuy", "coolbeans");
         BasicRunner.testerHomePage.defectReporterLink.click();
         BasicRunner.webDriverWait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(BasicRunner.testerHomePageURL)));
@@ -204,7 +209,7 @@ public class DefectSteps {
         Assert.assertEquals(currentURL, BasicRunner.defectReporterPageURL);
     }
     @When("The employee selects todays date")
-    public void the_employee_selects_todays_date() throws InterruptedException {
+    public void the_employee_selects_todays_date() {
         String date = java.time.LocalDate.now().toString();
         // Need to convert YYYY-MM-DD to MM-DD-YYYY
         date = date.substring(5,7) + "-" + date.substring(8,10) + "-" + date.substring(0, 4);
@@ -219,7 +224,7 @@ public class DefectSteps {
         }
     }
     @When("The employee selects high priority")
-    public void the_employee_selects_high_priority() throws InterruptedException {
+    public void the_employee_selects_high_priority() {
         Actions myAction = new Actions(BasicRunner.driver);
         int width = BasicRunner.defectReporterPage.severityInput.getSize().getWidth();
         int min = Integer.parseInt(BasicRunner.defectReporterPage.severityInput.getAttribute("min"));
@@ -249,7 +254,7 @@ public class DefectSteps {
         Assert.assertEquals(BasicRunner.defectReporterPage.priorityText.getText(), "High");
     }
     @When("The employee selects low severity")
-    public void the_employee_selects_low_severity() throws InterruptedException {
+    public void the_employee_selects_low_severity() {
         Actions myAction = new Actions(BasicRunner.driver);
         int width = BasicRunner.defectReporterPage.severityInput.getSize().getWidth();
         int min = Integer.parseInt(BasicRunner.defectReporterPage.severityInput.getAttribute("min"));
@@ -283,7 +288,7 @@ public class DefectSteps {
         button.click();
     }
     @Then("No confirmation dialog appears")
-    public void no_confirmation_dialog_appears() throws InterruptedException {
+    public void no_confirmation_dialog_appears() {
         Assert.assertThrows(NoAlertPresentException.class, () -> {
             BasicRunner.driver.switchTo().alert();
         });
@@ -311,7 +316,7 @@ public class DefectSteps {
         alert.accept();
     }
     @Then("A modal should appear with a Defect ID")
-    public void a_modal_should_appear_with_a_defect_id() throws InterruptedException {
+    public void a_modal_should_appear_with_a_defect_id() {
         WebElement text = BasicRunner.defectReporterPage.defectID;
         BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(text));
         String message = text.getText();

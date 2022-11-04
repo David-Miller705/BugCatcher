@@ -41,7 +41,7 @@ public class LoginSteps {
     }
 
     @Then("The employee should see an alert saying they have the wrong password")
-    public void the_employee_should_see_an_alert_saying_they_have_the_wrong_password() throws InterruptedException {
+    public void the_employee_should_see_an_alert_saying_they_have_the_wrong_password() {
         //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
         BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         String alert = BasicRunner.driver.switchTo().alert().getText();
@@ -49,7 +49,7 @@ public class LoginSteps {
     }
 
     @Then("The employee should see an alert saying no user with that username found")
-    public void the_employee_should_see_an_alert_saying_no_user_with_that_username_found() throws InterruptedException {
+    public void the_employee_should_see_an_alert_saying_no_user_with_that_username_found() {
         //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
         BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         String alert = BasicRunner.driver.switchTo().alert().getText();
@@ -57,7 +57,7 @@ public class LoginSteps {
     }
 
     @Then("the employee should be on the {string} page")
-    public void the_employee_should_be_on_the_role_page(String role) throws InterruptedException {
+    public void the_employee_should_be_on_the_role_page(String role) {
         //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
         BasicRunner.webDriverWait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(loginPageURL)));
         String currentURL = BasicRunner.driver.getCurrentUrl();
@@ -70,7 +70,7 @@ public class LoginSteps {
     }
 
     @Then("The employee should see their name {string} {string} on the home page")
-    public void the_employee_should_see_their_name_patty_pastiche_on_the_home_page(String firstName, String lastName) throws InterruptedException {
+    public void the_employee_should_see_their_name_patty_pastiche_on_the_home_page(String firstName, String lastName) {
         //WebDriverWait webDriverWait = new WebDriverWait(BasicRunner.driver, Duration.ofSeconds(10));
         BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.managerHomePage.greeting));
         String greeting = BasicRunner.managerHomePage.greeting.getText();
