@@ -190,7 +190,7 @@ public class DefectSteps {
         for (int i=0; i<pendingDefects; i++) {
             WebElement row = BasicRunner.testerHomePage.pendingDefectsStatusText.get(i);
             BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(row));
-            System.out.println(status + Integer.toString(i));
+            //System.out.println(status + Integer.toString(i));
             Assert.assertTrue(row.getText().contains(status));
         }
 
