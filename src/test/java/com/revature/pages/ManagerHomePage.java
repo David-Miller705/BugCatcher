@@ -45,6 +45,9 @@ public class ManagerHomePage extends Page{
     @FindBy(xpath = "//input[@list='employees']")
     public WebElement assignmentDropdown;
 
+    @FindBy(xpath = "//datalist[@id='employees']/option")
+    public List<WebElement> employeeOptions;
+
     @FindBy(xpath = "//button[text()='Assign']")
     public WebElement assignButton;
 

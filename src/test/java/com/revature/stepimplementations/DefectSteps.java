@@ -17,12 +17,16 @@ import org.testng.Assert;
 import java.text.ParseException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DefectSteps {
 
     private String defectID = "placeholder";
+    private int chosenDefect = 0;
+    private String chosenTester = null;
+    private Random random = new Random();
 
     // DEFECTS
     // assign-defect.feature
@@ -38,49 +42,63 @@ public class DefectSteps {
     }
     @Then("The manager should see pending defects")
     public void the_manager_should_see_pending_defects() {
-        Assert.assertNotEquals(BasicRunner.managerHomePage.pendingDefectsID.size(), 0);
+        int defectCount = BasicRunner.managerHomePage.pendingDefectsID.size();
+        Assert.assertNotEquals(defectCount, 0);
+        chosenDefect = random.nextInt(defectCount);
+        defectID = BasicRunner.managerHomePage.pendingDefectsID.get(chosenDefect).getText();
     }
     @When("The manager clicks on the select button for a defect")
     public void the_manager_clicks_on_the_select_button_for_a_defect() {
-        BasicRunner.managerHomePage.pendingDefectsSelect.get(0).click();
-        defectID = BasicRunner.managerHomePage.pendingDefectsID.get(0).getText();
+        WebElement button = BasicRunner.managerHomePage.pendingDefectsSelect.get(chosenDefect);
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
     }
     @Then("The defect description should appear in bold")
     public void the_defect_description_should_appear_in_bold() {
         Assert.assertEquals(BasicRunner.managerHomePage.boldDescription.getText(),
-                BasicRunner.managerHomePage.pendingDefectsDescription.get(0).getText());
+                BasicRunner.managerHomePage.pendingDefectsDescription.get(chosenDefect).getText());
     }
     @When("The manager selects an tester from the drop down")
     public void the_manager_selects_an_tester_from_the_drop_down() {
-        BasicRunner.managerHomePage.assignmentDropdown.sendKeys("ryeGuy");
+        int testerCount = BasicRunner.managerHomePage.employeeOptions.size();
+        int chosenTesterIndex = random.nextInt(testerCount);
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(BasicRunner.managerHomePage.assignmentDropdown));
+        chosenTester = BasicRunner.managerHomePage.employeeOptions.get(chosenTesterIndex).getAttribute("value");
+        BasicRunner.managerHomePage.assignmentDropdown.sendKeys(chosenTester);
     }
     @When("The manager clicks assign")
     public void the_manager_clicks_assign() {
-        BasicRunner.managerHomePage.assignButton.click();
+        WebElement button = BasicRunner.managerHomePage.assignButton;
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
     }
     @Then("The defect should disappear from the list")
     public void the_defect_should_disappear_from_the_list() throws InterruptedException {
-        Thread.sleep(1000);
-        Assert.assertNotEquals(defectID, "placeholder");
+        // The removed ID will cause a staleElementReferenceException due to removing a defect from the list
+        // So we wait for the element to detach from the dom then remove it from the list.
+        BasicRunner.webDriverWait.until(ExpectedConditions.stalenessOf(BasicRunner.managerHomePage.pendingDefectsID.get(chosenDefect)));
+        BasicRunner.managerHomePage.pendingDefectsID.remove(chosenDefect);
+        //List<WebElement> stillPendingDefectsID = BasicRunner.driver.findElements(By.xpath("//table/tbody/tr/td[1]"));
+        //BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOfAllElements(stillPendingDefectsID));
         for (WebElement e: BasicRunner.managerHomePage.pendingDefectsID) {
             Assert.assertNotEquals(e.getText(), defectID);
         }
     }
     @Given("The assigned tester is on their home page")
     public void the_assigned_tester_is_on_their_home_page() throws InterruptedException {
-        BasicRunner.driver.get(BasicRunner.loginPageURL);
-        Thread.sleep(500);
-        BasicRunner.loginPage.usernameInput.sendKeys("ryeGuy");
-        BasicRunner.loginPage.passwordInput.sendKeys("coolbeans");
-        BasicRunner.loginPage.loginButton.click();
-        Thread.sleep(500);
-        String currentURL = BasicRunner.driver.getCurrentUrl();
-        Assert.assertEquals(currentURL, BasicRunner.testerHomePageURL);
+        String password = null;
+        if (chosenTester.equals("ryeGuy")) {
+            password = "coolbeans";
+        } else if (chosenTester.equals("cavalier89")) {
+            password = "alucard";
+        }
+        BasicRunner.login(chosenTester, password);
     }
     @Then("The tester should see the pending defect")
     public void the_tester_should_see_the_pending_defect() {
         boolean foundAssignedDefect = false;
         for (WebElement e: BasicRunner.testerHomePage.pendingDefectsID) {
+            BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(e));
             if(e.getText().contains(defectID)) {
                 foundAssignedDefect = true;
             }
@@ -179,17 +197,10 @@ public class DefectSteps {
     //==============================================================================================================
     @Given("The employee is on the Defect Reporter Page")
     public void the_employee_is_on_the_defect_reporter_page() throws InterruptedException {
-        BasicRunner.driver.get(BasicRunner.loginPageURL);
-        Thread.sleep(500);
-        BasicRunner.loginPage.usernameInput.sendKeys("ryeGuy");
-        BasicRunner.loginPage.passwordInput.sendKeys("coolbeans");
-        BasicRunner.loginPage.loginButton.click();
-        Thread.sleep(500);
-        String currentURL = BasicRunner.driver.getCurrentUrl();
-        Assert.assertEquals(currentURL, BasicRunner.testerHomePageURL);
+        BasicRunner.login("ryeGuy", "coolbeans");
         BasicRunner.testerHomePage.defectReporterLink.click();
-        Thread.sleep(500);
-        currentURL = BasicRunner.driver.getCurrentUrl();
+        BasicRunner.webDriverWait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(BasicRunner.testerHomePageURL)));
+        String currentURL = BasicRunner.driver.getCurrentUrl();
         Assert.assertEquals(currentURL, BasicRunner.defectReporterPageURL);
     }
     @When("The employee selects todays date")
@@ -232,8 +243,9 @@ public class DefectSteps {
                 .moveByOffset(-width/2, 0)
                 .moveByOffset(target, 0)
                 .release()
+                .build()
                 .perform();
-        Thread.sleep(1000);
+        //Thread.sleep(1000);
         Assert.assertEquals(BasicRunner.defectReporterPage.priorityText.getText(), "High");
     }
     @When("The employee selects low severity")
@@ -259,17 +271,19 @@ public class DefectSteps {
                 .moveByOffset(-width/2, 0)
                 .moveByOffset(target, 0)
                 .release()
+                .build()
                 .perform();
-        Thread.sleep(1000);
+        //Thread.sleep(1000);
         Assert.assertEquals(BasicRunner.defectReporterPage.severityText.getText(), "LOW");
     }
     @When("The employee clicks the report button")
     public void the_employee_clicks_the_report_button() {
-        BasicRunner.defectReporterPage.reportButton.click();
+        WebElement button = BasicRunner.defectReporterPage.reportButton;
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
     }
     @Then("No confirmation dialog appears")
     public void no_confirmation_dialog_appears() throws InterruptedException {
-        Thread.sleep(1000);
         Assert.assertThrows(NoAlertPresentException.class, () -> {
             BasicRunner.driver.switchTo().alert();
         });
@@ -285,31 +299,36 @@ public class DefectSteps {
     //report-defect-positive
     @Then("There should be a confirmation box")
     public void there_should_be_a_confirmation_box() {
+        BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         Alert alert = BasicRunner.driver.switchTo().alert();
         String message = alert.getText();
         Assert.assertEquals(message, "Confirm Bug Report?");
     }
     @When("The employee clicks Ok")
     public void the_employee_clicks_ok() {
+        BasicRunner.webDriverWait.until(ExpectedConditions.alertIsPresent());
         Alert alert = BasicRunner.driver.switchTo().alert();
         alert.accept();
     }
     @Then("A modal should appear with a Defect ID")
     public void a_modal_should_appear_with_a_defect_id() throws InterruptedException {
-        Thread.sleep(1000);
-        String message = BasicRunner.defectReporterPage.defectID.getText();
+        WebElement text = BasicRunner.defectReporterPage.defectID;
+        BasicRunner.webDriverWait.until(ExpectedConditions.visibilityOf(text));
+        String message = text.getText();
         Pattern pattern = Pattern.compile("^Defect [0-9]+ created$");
         Matcher matcher = pattern.matcher(message);
         Assert.assertTrue(matcher.find());
     }
     @When("The employee clicks close")
     public void the_employee_clicks_close() {
-        BasicRunner.defectReporterPage.closeButton.click();
+        WebElement button = BasicRunner.defectReporterPage.closeButton;
+        BasicRunner.webDriverWait.until(ExpectedConditions.elementToBeClickable(button));
+        button.click();
     }
     @Then("The modal should disappear")
     public void the_modal_should_disappear() {
         List<WebElement> children = BasicRunner.driver.findElements(By.xpath("//div[@class='ReactModalPortal']/*"));
         Assert.assertEquals(children.size(), 0);
     }
-    
+
 }
